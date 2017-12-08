@@ -1,17 +1,33 @@
 ////INCIO - Idioma
 //Definiendo la clase utilizando prototipos
-function Lang(language = 'es')
+function Lang(language = 'en')
 {
   this.diccionary = {}
   this.keyNotFound = []
 
-  if(language == 'en')
+  if(language == 'es')
   {
     //Se puede cargar json con el idioma
     this.diccionary = {
-      'Hola': 'hi'
+      'Game Simon Says!': 'Juego Simón Dice!',
+      'Welcome a Simon Says!': 'Bienvenido a Simón Dice!',
+      'Version': 'Versión',
+      'Language': 'Idioma',
+      'What level would you like to play?': '¿Cuál nivel le gustaría jugar?',
+      'Easy': 'Fácil',
+      'Medium': 'Medio',
+      'Hard': 'Difícil',
+      'Level': 'Nivel',
+      'You lost :(': 'Has perdido :(',
+      'You pushed':'Tu precionaste la',
+      'and you should push':' y debiste haber presionado la',
+      'Do you want to try again?':'¿Quieres intentar otra vez?',
+      'Yes': 'Si',
+      'No': 'No',
     }
   }
+
+  this.language = language.toUpperCase()
 }
 
 Lang.prototype.get = function get(key)
@@ -21,9 +37,6 @@ Lang.prototype.get = function get(key)
   if(!result)
   {
     this.keyNotFound.push(key)
-  }
-  else
-  {
     result = key
   }
 
@@ -90,11 +103,13 @@ const Utils = {
 ////INICIO - App
 class App {
   
-  constructor(utils)
+  constructor(utils, version = '0.1.0')
   {
+    this.version = version
+
     //Cargamos el tratado de las funcionalidades comunes y el lenguaje
     this.utils = utils
-    this.lang = new Lang()
+    this.lang = new Lang(navigator.language || navigator.userLanguage)
 
     //Cargamos las vistas
     this.$body = document.querySelectorAll('body')[0]
@@ -104,7 +119,6 @@ class App {
     this.levels = 15
     this.keys = this.utils.generateKeys(this.levels)
     this.keysSpeed = 1000
-
     this.$keyboardKeys = document.querySelectorAll('.key')
     this.keyboardKeysLength = this.$keyboardKeys.length
     this.$levelbox = document.getElementById('levelbox')
@@ -115,16 +129,16 @@ class App {
   {
     let view1 = `
     <div id="levelbox" class="levelbox active">
-      <h1>Welcome!</h1>
-      <p>What level would you like to play?</p>
+      <h1>${this.lang.get('Welcome a Simon Says!')}</h1>
+      <span>${this.lang.get('Version')} ${this.version} - ${this.lang.get('Language')} ${this.lang.language} </span>
+      <h3>${this.lang.get('What level would you like to play?')}</h3>
       <div class="buttonsbox">
-        <div class="level" onclick="myApp.setLevel(1)">Easy</div>
-        <div class="level" onclick="myApp.setLevel(2)">Medium</div>
-        <div class="level" onclick="myApp.setLevel(3)">Hard</div>
+        <div class="level" onclick="myApp.setLevel(1)">${this.lang.get('Easy')}</div>
+        <div class="level" onclick="myApp.setLevel(2)">${this.lang.get('Medium')}</div>
+        <div class="level" onclick="myApp.setLevel(3)">${this.lang.get('Hard')}</div>
       </div>
     </div>
     `
-
     let view2 = `
     <div id="keyboard" class="keyboard">
       <div class="row">
@@ -167,6 +181,9 @@ class App {
 
     //Agregamos el teclado
     $body.innerHTML += view2
+
+    //Cambiando título y descripción según idioma
+    document.title = this.lang.get(document.title)
   }
 
   setLevel (levelNumber)
@@ -198,12 +215,12 @@ class App {
     if (currentLevel == this.levels)
     {
       return swal({
-        title: 'You won!',
-        type: 'success',
-        text: `Do you want to play again?`,
+        title: this.lang.get('You won!'),
+        type: this.lang.get('success'),
+        text: this.lang.get(`Do you want to play again?`),
         showCancelButton: true,
-        confirmButtomText: 'Yes',
-        cancelButtonText: 'No',
+        confirmButtomText: this.lang.get('Yes'),
+        cancelButtonText: this.lang.get('No'),
         closeOnConfirm: true
       }, 
       function (ok) 
@@ -218,7 +235,7 @@ class App {
   
     swal({
       timer: 1000,
-      title: `Level ${currentLevel + 1} / ${this.levels}`,
+      title: `${this.lang.get('Level')} ${currentLevel + 1} / ${this.levels}`,
       showConfirmButton: false
     })
   
@@ -278,16 +295,16 @@ class App {
         {
           _this.$keyboardKeys[k].removeEventListener('click', onclick)
         }
-
+        console.log('Error - _this.keys:', _this.keys)
         setTimeout(
           () => swal(
             {
-              title: 'You lost :(',
+              title: _this.lang.get('You lost :('),
               type: 'error',
-              text: `You pushed ${String.fromCharCode(key).toUpperCase()} and you should push ${String.fromCharCode(_this.keys[i])}\n\nDo you want to try again?`,
+              text: `${_this.lang.get('You pushed')} ${String.fromCharCode(key).toUpperCase()} ${_this.lang.get('and you should push')} ${String.fromCharCode(_this.keys[i])}\n\n${_this.lang.get('Do you want to try again?')}`,
               showCancelButton: true,
-              confirmButtomText: 'Yes',
-              cancelButtonText: 'No',
+              confirmButtomText: _this.lang.get('Yes'),
+              cancelButtonText: _this.lang.get('No'),
               closeOnConfirm: true
             }, 
             function (ok) 
