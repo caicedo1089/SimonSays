@@ -1,3 +1,108 @@
+////INCIO - Idioma
+//Definiendo la clase utilizando prototipos
+function Lang(language = 'es')
+{
+  this.diccionary = {}
+  this.keyNotFound = []
+
+  if(language == 'en')
+  {
+    //Se puede cargar json con el idioma
+    this.diccionary = {
+      'Hola': 'hi'
+    }
+  }
+}
+
+Lang.prototype.get = function get(key)
+{
+  let result = this.diccionary[key]
+
+  if(!result)
+  {
+    this.keyNotFound.push(key)
+  }
+  else
+  {
+    result = key
+  }
+
+  return result
+}
+////FIN - Idioma
+
+////INICIO - Utils
+// Definiendo la clase utilizando Object.create
+const Utils = {
+  init: function init (ver = '0.1.0')
+  {
+    let obj = Object.create(this)
+    
+    obj.ver = ver;
+
+    return obj
+  },
+  
+  generateKeys: function generateKeys (levels = 15) 
+  {
+    let result = []
+    let iRandomKey = this.iGenerateRandomKey(levels)
+    let randomKey
+    
+    while(randomKey = iRandomKey.next() && !randomKey.done)
+    {
+      result.push(randomKey.value)
+    }
+    
+    return result
+    //return new Array(levels).fill(0).map(generateRandomKey)
+  },
+
+  generateRandomMinMax: function generateRandomKey (min = 65, max = 90) 
+  {
+    return Math.round(Math.random() * (max - min) + min)
+  },
+
+  iGenerateRandomKey: function iGenerateRandomKey(levelMax = 15)
+  {
+    let level = 0
+    let generateRandomKey = this.generateRandomMinMax
+    
+    //Closure
+    return {
+      next: function() 
+      {
+        let result = {
+          done: ++level == levelMax
+        }
+
+        if(!result.done)
+          result['value'] = generateRandomKey()
+        
+        return result
+      }
+    }
+  }
+}
+////FIN - Utils
+
+////INICIO - App
+class App {
+  
+  constructor(utils)
+  {
+    this.utils = utils
+    this.lang = new Lang()
+
+    this.levels = 15
+    this.keys = []
+  }
+  
+}
+////FIN - App
+
+let myApp = new App( Utils )
+
 let levels
 let keys
 let keysSpeed
@@ -6,7 +111,8 @@ const keyboardKeysLength = keyboardKeys.length
 let levelbox = document.getElementById('levelbox')
 let keyboard = document.getElementById('keyboard')
 
-function setLevel (levelNumber) {
+function setLevel (levelNumber) 
+{
   levelbox.className = 'levelbox'
   keyboard.classList.add('active')
   switch (levelNumber) {
@@ -26,7 +132,8 @@ function setLevel (levelNumber) {
   nextLevel(0)
 }
 
-function nextLevel (currentLevel) {
+function nextLevel (currentLevel) 
+{
   if (currentLevel == levels) {
     return swal({
       title: 'You won!',
@@ -107,21 +214,25 @@ function nextLevel (currentLevel) {
   }
 }
 
-function generateRandomKey () {
+function generateRandomKey () 
+{
   const min = 65
   const max = 90
   return Math.round(Math.random() * (max - min) + min)
 }
 
-function generateKeys (levels) {
+function generateKeys (levels) 
+{
   return new Array(levels).fill(0).map(generateRandomKey)
 }
 
-function getElementByKeyCode (keyCode) {
+function getElementByKeyCode (keyCode) 
+{
   return document.querySelector(`[data-key="${keyCode}"]`)
 }
 
-function activate (keyCode, opts = {}) {
+function activate (keyCode, opts = {}) 
+{
   const el = getElementByKeyCode(keyCode)
   el.classList.add('active')
   if (opts.success) {
@@ -132,6 +243,7 @@ function activate (keyCode, opts = {}) {
   setTimeout(() => deactivate(el), 500)
 }
 
-function deactivate (el) {
+function deactivate (el) 
+{
   el.className = 'key'
 }
