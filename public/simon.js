@@ -24,6 +24,9 @@ function Lang(language = 'en')
       'Do you want to try again?':'¿Quieres intentar otra vez?',
       'Yes': 'Si',
       'No': 'No',
+      'You won!': 'Ganastes!!',
+      'Do you want to play again?':'¿Quieres jugar otra vez?',
+
     }
   }
 
@@ -82,6 +85,8 @@ const Utils = {
     let level = 0
     let generateRandomKey = this.generateRandomMinMax
     
+    ++levelMax
+
     //Closure
     return {
       next: function() 
@@ -212,11 +217,12 @@ class App {
 
   nextLevel (currentLevel) 
   {
+    let _this = this
     if (currentLevel == this.levels)
     {
       return swal({
         title: this.lang.get('You won!'),
-        type: this.lang.get('success'),
+        type: 'success',
         text: this.lang.get(`Do you want to play again?`),
         showCancelButton: true,
         confirmButtomText: this.lang.get('Yes'),
@@ -227,8 +233,8 @@ class App {
       {
         if (ok) 
         {
-          this.$levelbox.classList.add('active')
-          this.$keyboard.className = 'keyboard'
+          _this.$levelbox.classList.add('active')
+          _this.$keyboard.className = 'keyboard'
         }
       })
     }
@@ -267,7 +273,7 @@ class App {
     {
       keyPressed(ev.target.innerHTML.toUpperCase().charCodeAt(0))
     }
-    let _this = this
+    
     function keyPressed (key) 
     {
       console.log('this in keyPressed:', this)
@@ -349,5 +355,8 @@ class App {
 }
 ////FIN - App
 
+//Manejamos las versiones para cuando se actualice a aplicación manejar la cache
+let version = document.getElementById('idClassPrincipal').src.split('v=')[1]
+
 //Se activa la aplicación
-let myApp = new App( Utils )
+let myApp = new App(Utils, version)
